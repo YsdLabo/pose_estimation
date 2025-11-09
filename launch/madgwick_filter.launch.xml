@@ -1,0 +1,18 @@
+<?xml  version="1.0"?>
+<launch>
+  <node  pkg="bno055_usb_stick_ros2"  exec="bno055_usb_stick_node">
+    <param  name="port"  value="/dev/ttyBNO055"/>
+    <remap  from="/imu"  to="/imu/data_raw"/>
+    <remap  from="/magnetic_field"  to="/imu/mag"/>
+    <param  name="tf_frame_id"  value="odom"/>
+    <param  name="tf_child_frame_id"  value="imu_frame"/>
+  </node>
+
+  <node  pkg="imu_filter_madgwick"  exec="imu_filter_madgwick_node">
+    <param  name="publish_tf"  value="true"/>
+    <param  name="use_mag"  value="false"/>
+  </node>
+
+  <node  pkg="rviz2"  exec="rviz2"  args="-f  odom"/>
+</launch>
+
