@@ -26,11 +26,11 @@ private:
 	// 購読用コールバック関数
 	void  callback_imu( const  sensor_msgs::msg::Imu::SharedPtr  msg )
 	{
-		sensor_msgs::msg::Imu::SharedPtr imu_rcf = msg;	// 受信メッセージをコピー
+		const auto& imu_rcf = *msg;	// 受信メッセージをコピー
 
-		double  acc_x = imu_rcf->linear_acceleration.x;
-		double  acc_y = imu_rcf->linear_acceleration.y;
-		double  acc_z = imu_rcf->linear_acceleration.z;
+		double  acc_x = imu_rcf.linear_acceleration.x;
+		double  acc_y = imu_rcf.linear_acceleration.y;
+		double  acc_z = imu_rcf.linear_acceleration.z;
 
 		double  pitch = // ここに数式を入れましょう
 		double  roll = // ここに数式を入れましょう
@@ -42,7 +42,7 @@ private:
 		quat.normalize( );     // 正規化
 		geometry_msgs::msg::PoseStamped  pub_msg;  // メッセージ生成
 		pub_msg.pose.orientation = tf2::toMsg( quat );    // メッセージ型へ変換
-		pub_msg.header.stamp = imu_rcf->header.stamp;
+		pub_msg.header.stamp = imu_rcf.header.stamp;
 		pub_msg.header.frame_id = "imu_link";
 		pub_pose_->publish( pub_msg );
 
