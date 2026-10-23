@@ -26,11 +26,11 @@ private:
 	// 購読用コールバック関数
 	void  callback_imu( const  sensor_msgs::msg::Imu::SharedPtr  msg )
 	{
-		sensor_msgs::msg::Imu imu_raw = *msg;	// 受信メッセージをコピー
+		const auto& imu_raw = *msg;	// 受信メッセージをコピー
 
 		rclcpp::Time  current_stamp(imu_raw.header.stamp);
 
-		// 区分求積法
+		// 台形近似
 		if(!first_time_) {
 			double  h = (current_stamp - last_stamp_).seconds();
 			angle_z_ += // ここに台形近似の式を入力。last_raw_z_を使用すること
