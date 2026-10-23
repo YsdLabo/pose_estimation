@@ -4,10 +4,10 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>  // tf2::toMsg
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
-class PoseUsingGravity  :  public  rclcpp::Node
+class PoseUsingGravity : public rclcpp::Node
 {
 public:
-	PoseUsingGravity( ) : Node("cal_pose_by_gravity_node")
+	PoseUsingGravity() : Node("pose_using_gravity_node")
 	{
 		// サブスクライバーを作成（/imuトピックを購読）
 		sub_imu_ = this->create_subscription<sensor_msgs::msg::Imu> (
@@ -24,22 +24,21 @@ public:
 
 private:
 	// 購読用コールバック関数
-	void  callback_imu( const  sensor_msgs::msg::Imu::SharedPtr  msg )
+	void  callback_imu( const sensor_msgs::msg::Imu::SharedPtr msg )
 	{
 		const auto& imu_rcf = *msg;	// 受信メッセージをコピー
+		double acc_x = imu_rcf.linear_acceleration.x;    // 加速度X
+		double acc_y = imu_rcf.linear_acceleration.y;    // 加速度Y
+		double acc_z = imu_rcf.linear_acceleration.z;    // 加速度Z
 
-		double  acc_x = imu_rcf.linear_acceleration.x;
-		double  acc_y = imu_rcf.linear_acceleration.y;
-		double  acc_z = imu_rcf.linear_acceleration.z;
-
-		double  pitch = // ここに数式を入れましょう
-		double  roll = // ここに数式を入れましょう
-		double  yaw = 0.0;
+		double roll = // ここに数式を入れましょう
+		double pitch = // ここに数式を入れましょう
+		double yaw = 0.0;
 
 		// オイラー角をクォータニオンに変換して配信
 		tf2::Quaternion  quat;
 		quat.setRPY( roll, pitch, yaw );    // クォータニオンの生成
-		quat.normalize( );     // 正規化
+		quat.normalize();     // 正規化
 		geometry_msgs::msg::PoseStamped  pub_msg;  // メッセージ生成
 		pub_msg.pose.orientation = tf2::toMsg( quat );    // メッセージ型へ変換
 		pub_msg.header.stamp = imu_rcf.header.stamp;
