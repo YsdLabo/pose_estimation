@@ -1,10 +1,10 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <tf2/LinearMath/Quaternion.h>
-#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 
-// 重力による姿勢計算
+// ジャイロによる姿勢計算
 class  PoseUsingGyro  :  public  rclcpp::Node
 {
 public:
@@ -37,11 +37,11 @@ private:
 	// 購読用コールバック関数
 	void  callback_imu( const  sensor_msgs::msg::Imu::SharedPtr  msg )
 	{
-		sensor_msgs::msg::Imu::SharedPtr  imu_rcf = msg;   // 受信メッセージをコピー
-		rclcpp::Time current_stamp(imu_rcf->header.stamp);
-		double  w_x = imu_rcf->angular_velocity.x;    // 角速度X
-		double  w_y = imu_rcf->angular_velocity.y;    // 角速度Y
-		double  w_z = imu_rcf->angular_velocity.z;    // 角速度Z
+		const auto&  imu_rcf = *msg;   // 受信メッセージをコピー
+		rclcpp::Time current_stamp(imu_rcf.header.stamp);
+		double  w_x = imu_rcf.angular_velocity.x;    // 角速度X
+		double  w_y = imu_rcf.angular_velocity.y;    // 角速度Y
+		double  w_z = imu_rcf.angular_velocity.z;    // 角速度Z
 
 		if( !first_time ) {
 			double  dt = (current_stamp - last_stamp_).seconds( );
@@ -63,9 +63,9 @@ private:
 			w_z_i_ += w_z;
 			count ++;
 			if(count == 1000) {
-				w_x_i_ /= (double)count;
-				w_y_i_ /= (double)count;
-				w_z_i_ /= (double)count;
+				w_x_i_ /= static_cast<double>(count);
+				w_y_i_ /= static_cast<double>(count);
+				w_z_i_ /= static_cast<double>(count);
 				first_time = false;
 			}
 		}
@@ -76,7 +76,7 @@ private:
 		quat.normalize( );     // 正規化
 		geometry_msgs::msg::PoseStamped  pub_msg;  // メッセージ生成
 		pub_msg.pose.orientation = tf2::toMsg( quat );    // メッセージ型へ変換
-		pub_msg.header.stamp = imu_rcf->header.stamp;
+		pub_msg.header.stamp = current_stamp;
 		pub_msg.header.frame_id = "imu_link";
 		pub_pose_->publish( pub_msg );
 		
