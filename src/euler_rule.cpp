@@ -26,14 +26,15 @@ private:
 	// 購読用コールバック関数
 	void  callback_imu( const  sensor_msgs::msg::Imu::SharedPtr  msg )
 	{
-		sensor_msgs::msg::Imu::SharedPtr imu_raw = msg;	// 受信メッセージをコピー
+		const sensor_msgs::msg::Imu& imu_raw = *msg;	// 受信メッセージをコピー
 
-		rclcpp::Time  current_stamp(imu_raw->header.stamp);
+		rclcpp::Time  current_stamp(imu_raw.header.stamp);
+		if(current_stamp.nanoseconds()==0) return;
 
-		// 区分求積法
+		// オイラー法による数値積分
 		if(!first_time_) {
 			double  h = (current_stamp - last_stamp_).seconds();
-			angle_z_ += h * imu_raw->angular_velocity.z;
+			angle_z_ += h * imu_raw.angular_velocity.z;
 		}
 		else {
 			angle_z_ = 0.0;
