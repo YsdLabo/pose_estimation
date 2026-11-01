@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
-#include <tf2/LinearMath/Quaternion.h>   // tf2::Quaternion
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>  // tf2::toMsg
+#include <tf2/LinearMath/Quaternion.h>    // tf2::Quaternion
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>  // tf2::toMsg()
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
 class EulerRule  :  public  rclcpp::Node
